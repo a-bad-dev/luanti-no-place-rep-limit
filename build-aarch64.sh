@@ -4,6 +4,7 @@
 
 
 VERSION="5.15.2"
+SDL_VERSION="2.32.10"
 
 BOLD="\x1b[1m"
 RED="\x1b[31m"
@@ -18,6 +19,7 @@ fi
 
 # install deps
 echo -e "${BOLD}Downloading deps...${RESET}"
+
 apt-get install -y --no-install-recommends \
 	git \
 	g++ \
@@ -46,12 +48,19 @@ apt-get install -y --no-install-recommends \
 	ca-certificates \
 	file
 
-# download luajit and luanti source code
-echo -e "${BOLD}Downloading LuaJIT and Luanti source code...${RESET}"
+# download luajit, SDL2, and luanti source code
+echo -e "${BOLD}Downloading LuaJIT, SDL2, and Luanti source code...${RESET}"
 git clone --depth=1 https://github.com/LuaJIT/LuaJIT.git luajit
 curl -Lo luanti.zip https://github.com/luanti-org/luanti/archive/refs/tags/${VERSION}.zip
+curl -Lo sdl2.zip https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-${SDL_VERSION}.zip
+
 unzip luanti.zip
 mv luanti-${VERSION} luanti/
+rm luanti.zip
+
+unzip sdl2.zip
+mv SDL2-${SDL_VERSION} sdl2
+rm sdl2.zip
 
 # create patch files
 cat > patch-1.patch <<'EOF'
@@ -79,6 +88,26 @@ echo -e "${BOLD}Compiling LuaJIT...${RESET}"
 cd luajit
 make amalg -j$(nproc)
 cd ..
+
+# compile sdl2
+echo -e "${BOLD}Compiling SDL2...${RESET}"
+cd sdl2
+
+mkdir build
+cd build
+
+cmake .. -G Ninja \
+	-DSDL_INSTALL_CMAKEDIR=usr/lib/cmake/SDL2 \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX=/ \
+	-DCMAKE_C_FLAGS="-DSDL_LEAN_AND_MEAN=1" \
+	-DSDL_{AUDIO,RENDER,VULKAN,TEST,STATIC}=OFF
+
+ninja -j$(nproc)
+strip -s *.so
+DESTDIR="../../" ninja install -j$(nproc)
+
+cd ../..
 
 # prepare to compile luanti
 cd luanti
@@ -126,7 +155,6 @@ chmod +x AppRun
 # bundle the libraries
 INCLUDE_LIBS=(
 	libopenal.so.1
-	libSDL2-2.0.so.0
 	libsndio.so.7.0
 	libbsd.so.0
 	libmd.so.0
@@ -146,6 +174,9 @@ for i in "${INCLUDE_LIBS[@]}"; do
 	cp /usr/lib/aarch64-linux-gnu/${i} usr/lib/
 done
 
+# copy our SDL2 into place
+cp ../../../usr/lib/libSDL2-2.0.so.0 usr/lib/
+
 # finally make the appimage
 cd ..
 ARCH=aarch64 ./appimagetool --appimage-extract-and-run AppDir/
@@ -156,9 +187,10 @@ mv Luanti-aarch64.AppImage ../../luanti-${VERSION}-aarch64.AppImage
 # clean up
 cd ../..
 
-rm -rf luanti{,.zip}
+rm -rf luanti/
+rm -rf sdl2/
+rm -rf usr/
 rm -rf luajit/
 
 # done :D
 echo -e "${BOLD}${GREEN}Done!${RESET}"
-

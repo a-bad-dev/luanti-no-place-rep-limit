@@ -1,6 +1,6 @@
 TODO:
 
-[ ] x86_64 Linux AppImages
-[ ] aarch64 Linux AppImages
+[X] x86_64 Linux AppImages
+[X] aarch64 Linux AppImages
 
-[ ] Windows portable builds
+[X] Windows portable builds

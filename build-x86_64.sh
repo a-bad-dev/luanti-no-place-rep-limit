@@ -64,7 +64,7 @@ rm sdl2.zip
 
 # create patch files
 cat > patch-1.patch <<'EOF'
-3713c3713
+3753c3753
 < 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0f);
 ---
 > 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.001f, 2.0f);

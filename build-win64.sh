@@ -1,7 +1,7 @@
 #!/bin/bash
 # this script is intended to be run in MSYS2 CLANG64
 
-VERSION="5.15.2"
+VERSION="5.16.0-rc1"
 
 BOLD="\x1b[1m"
 GREEN="\x1b[32m"

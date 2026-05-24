@@ -1,0 +1,4 @@
+151c151
+< repeat_place_time (Place repetition interval) float 0.25 0.16 2.0
+---
+> repeat_place_time (Place repetition interval) float 0.25 0.001 2.0

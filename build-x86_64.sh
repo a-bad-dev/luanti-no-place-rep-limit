@@ -11,6 +11,8 @@ RED="\x1b[31m"
 GREEN="\x1b[32m"
 RESET="\x1b[0m"
 
+SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
 # make sure we are root
 if [ "$(id -u)" != "0" ]; then
 	echo -e "${BOLD}${RED}This script must be run as root!${RESET}"
@@ -62,26 +64,9 @@ unzip sdl2.zip
 mv SDL2-${SDL_VERSION} sdl2
 rm sdl2.zip
 
-# create patch files
-cat > patch-1.patch <<'EOF'
-3753c3753
-< 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0f);
----
-> 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.001f, 2.0f);
-EOF
-
-cat > patch-2.patch <<'EOF'
-151c151
-< repeat_place_time (Place repetition interval) float 0.25 0.16 2.0
----
-> repeat_place_time (Place repetition interval) float 0.25 0.001 2.0
-EOF
-
-# apply patches
-patch luanti/src/client/game.cpp patch-1.patch
-patch luanti/builtin/settingtypes.txt patch-2.patch
-
-rm patch-[1-2].patch
+# apply external patch files
+patch luanti/src/client/game.cpp "${SCRIPT_DIR}/patches/patch-1.patch"
+patch luanti/builtin/settingtypes.txt "${SCRIPT_DIR}/patches/patch-2.patch"
 
 # compile luajit
 echo -e "${BOLD}Compiling LuaJIT...${RESET}"

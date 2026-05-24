@@ -7,6 +7,8 @@ BOLD="\x1b[1m"
 GREEN="\x1b[32m"
 RESET="\x1b[0m"
 
+SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
 # system update (skip this most of the time)
 echo -e "${BOLD}Updating system...${RESET}"
 pacman -Syu
@@ -24,25 +26,9 @@ tar -xf luanti.tar
 
 cd luanti-${VERSION}/
 
-# create and apply patches
-cat > patch-1.patch <<'EOF'
-3753c3753
-< 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0f);
----
-> 	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.001f, 2.0f);
-EOF
-
-cat > patch-2.patch <<'EOF'
-151c151
-< repeat_place_time (Place repetition interval) float 0.25 0.16 2.0
----
-> repeat_place_time (Place repetition interval) float 0.25 0.001 2.0
-EOF
-
-patch src/client/game.cpp patch-1.patch
-patch builtin/settingtypes.txt patch-2.patch
-
-rm patch-[1-2].patch
+# apply external patch files
+patch src/client/game.cpp "${SCRIPT_DIR}/patches/patch-1.patch"
+patch builtin/settingtypes.txt "${SCRIPT_DIR}/patches/patch-2.patch"
 
 # configure
 echo -e "${BOLD}Preparing to compile...${RESET}"

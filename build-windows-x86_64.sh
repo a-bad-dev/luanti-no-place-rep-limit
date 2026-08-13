@@ -1,13 +1,13 @@
 #!/bin/bash
 # this script is intended to be run in MSYS2 CLANG64
 
-VERSION="5.16.1"
-
 BOLD="\x1b[1m"
 GREEN="\x1b[32m"
 RESET="\x1b[0m"
 
 SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+VERSION="$(cat "$SCRIPT_DIR"/VERSION)"
 
 # system update (skip this most of the time)
 echo -e "${BOLD}Updating system...${RESET}"

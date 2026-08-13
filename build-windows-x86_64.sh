@@ -40,8 +40,7 @@ ninja -j$(nproc)
 
 # bundle DLLs
 echo -e "${BOLD}Bundling DLLs...${RESET}"
-chmod +x ../bundle_dlls.sh
-../bundle_dlls.sh bin/luanti.exe bin/
+util/bundle_dlls.sh bin/luanti.exe bin/
 
 # build the zip archive of luanti
 echo -e "${BOLD}Building zip file...${RESET}"

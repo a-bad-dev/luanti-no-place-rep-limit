@@ -2,16 +2,16 @@
 
 # this script is intended to be run on debian 13 x86_64
 
-
-VERSION="5.16.1"
-SDL_VERSION="2.32.10"
-
 BOLD="\x1b[1m"
 RED="\x1b[31m"
 GREEN="\x1b[32m"
 RESET="\x1b[0m"
 
 SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+
+VERSION="$(cat "$SCRIPT_DIR"/VERSION)"
+SDL_VERSION="2.32.10"
 
 # make sure we are root
 if [ "$(id -u)" != "0" ]; then

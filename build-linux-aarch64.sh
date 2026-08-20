@@ -29,6 +29,7 @@ apt-get install -y --no-install-recommends \
 	libc6-dev \
 	cmake \
 	curl \
+	unzip \
 	libpng-dev \
 	libjpeg-dev \
 	libxi-dev \
